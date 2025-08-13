@@ -87,9 +87,29 @@ function startSurprise() {
     
     document.getElementById("inputSection").style.display = "none";
     document.getElementById("surpriseSection").style.display = "block";
-    document.getElementById("greeting").innerText = 'hehew😁 nek surprise lu em levv.',
-    'edo chepalii ga anii saying ',
-    '  happy happy birthday! 🎂';
+   // Set the "Open Surprise 🎁" text initially
+document.getElementById("greeting").innerText = "Open Surprise 🎁";
+
+function startSurprise() {
+    let name = document.getElementById("nameInput").value;
+    if (!name) {
+        alert("Please enter a name!");
+        return;
+    }
+    
+    // Change background to hearts
+    document.body.style.background = "url('hearts.jpg') no-repeat center center/cover";
+    
+    document.getElementById("inputSection").style.display = "none";
+    document.getElementById("surpriseSection").style.display = "block";
+    
+    // Birthday greeting
+    document.getElementById("greeting").innerText = 'hehew 😁 neku surprise lu em levu urike ney edo chepalii ga ani saying happy happy birthday ❤️;
+    
+    document.getElementById("music").play();
+    startConfetti();
+}
+
     
     document.getElementById("music").play();
     startConfetti();
