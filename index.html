@@ -8,134 +8,119 @@
     body {
         margin: 0;
         padding: 0;
-        font-family: 'Arial', sans-serif;
+        font-family: 'Poppins', sans-serif;
         background: url('balloons.jpg') no-repeat center center/cover;
         height: 100vh;
-        overflow: hidden;
-    }
-    #overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(255,255,255,0.8);
         display: flex;
-        flex-direction: column;
-        align-items: center;
         justify-content: center;
-        z-index: 2;
-    }
-    #nameInput {
-        padding: 10px;
-        font-size: 18px;
-        border-radius: 10px;
-        border: 2px solid #ff4081;
-        outline: none;
-        margin-bottom: 10px;
-        text-align: center;
-    }
-    #startBtn {
-        padding: 10px 20px;
-        background-color: #ff4081;
-        color: white;
-        font-size: 18px;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-    }
-    #greeting {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 3em;
+        align-items: center;
+        flex-direction: column;
         color: white;
         text-shadow: 2px 2px 5px black;
-        display: none;
-        z-index: 1;
+        transition: background 1s ease-in-out;
+    }
+    .container {
         text-align: center;
+    }
+    input {
+        padding: 12px;
+        border-radius: 25px;
+        border: none;
+        outline: none;
+        font-size: 18px;
+        text-align: center;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+    }
+    button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 25px;
+        background: hotpink;
+        color: white;
+        font-size: 18px;
+        margin-top: 10px;
+        cursor: pointer;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+    }
+    h1 {
+        font-size: 40px;
+        animation: pop 0.5s ease-in-out;
+    }
+    @keyframes pop {
+        0% { transform: scale(0); }
+        100% { transform: scale(1); }
+    }
+    canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
     }
 </style>
 </head>
 <body>
 
-<div id="overlay">
-    <input type="text" id="nameInput" placeholder="Enter your name">
-    <button id="startBtn">Start Surprise</button>
+<div class="container" id="inputSection">
+    <h1>Enter Your Name</h1>
+    <input type="text" id="nameInput" placeholder="Your name here">
+    <br>
+    <button onclick="startSurprise()">Start Surprise</button>
 </div>
 
-<div id="greeting"></div>
+<div class="container" id="surpriseSection" style="display:none;">
+    <h1 id="greeting"></h1>
+</div>
 
 <canvas id="confettiCanvas"></canvas>
+<audio id="music" src="birthday_song.mp3"></audio>
 
 <script>
-    const overlay = document.getElementById('overlay');
-    const startBtn = document.getElementById('startBtn');
-    const greeting = document.getElementById('greeting');
-    const confettiCanvas = document.getElementById('confettiCanvas');
-    const ctx = confettiCanvas.getContext('2d');
-    confettiCanvas.width = window.innerWidth;
-    confettiCanvas.height = window.innerHeight;
-
-    let confetti = [];
-
-    function createConfetti() {
-        confetti.push({
-            x: Math.random() * confettiCanvas.width,
-            y: Math.random() * confettiCanvas.height - confettiCanvas.height,
-            r: Math.random() * 6 + 4,
-            d: Math.random() * 0.5 + 0.5,
-            color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-            tilt: Math.random() * 10 - 10
-        });
+function startSurprise() {
+    let name = document.getElementById("nameInput").value;
+    if (!name) {
+        alert("Please enter a name!");
+        return;
     }
+    
+    // Change background to hearts
+    document.body.style.background = "url('hearts.jpg') no-repeat center center/cover";
+    
+    document.getElementById("inputSection").style.display = "none";
+    document.getElementById("surpriseSection").style.display = "block";
+    document.getElementById("greeting").innerText = 'hehew😁 nek surprise lu em levv.',
+    'edo chepalii ga anii saying ',
+    '  happy happy birthday! 🎂';
+    
+    document.getElementById("music").play();
+    startConfetti();
+}
 
-    function drawConfetti() {
-        ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-        confetti.forEach(c => {
-            ctx.beginPath();
-            ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2, false);
-            ctx.fillStyle = c.color;
-            ctx.fill();
-        });
-        updateConfetti();
-    }
-
-    function updateConfetti() {
-        confetti.forEach(c => {
-            c.y += c.d * 5;
-            if (c.y > confettiCanvas.height) {
-                c.x = Math.random() * confettiCanvas.width;
-                c.y = -10;
-            }
-        });
-    }
-
-    setInterval(() => {
-        createConfetti();
-        drawConfetti();
-    }, 30);
-
-    startBtn.addEventListener('click', () => {
-        const name = document.getElementById('nameInput').value.trim();
-        if (!name) {
-            alert("Please enter your name!");
-            return;
+// Simple Confetti Effect
+function startConfetti() {
+    const canvas = document.getElementById("confettiCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const pieces = new Array(150).fill().map(() => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        w: 10,
+        h: 10,
+        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+        speed: Math.random() + 1
+    }));
+    function update() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let p of pieces) {
+            p.y += p.speed;
+            if (p.y > canvas.height) p.y = -10;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x, p.y, p.w, p.h);
         }
-
-        // Change background to hearts
-        document.body.style.background = "url('hearts.jpg') no-repeat center center/cover";
-
-        // Show greeting
-        greeting.innerHTML = `Happy Birthday, ${name}! 🎉❤️`;
-        greeting.style.display = 'block';
-
-        // Play background music
-        const audio = new Audio('birthday_song.mp3');
-        audio.loop = true;
-        audio.play();
-
-        // Hide overlay
-        overlay.style.display = 'none';
-    });
+        requestAnimationFrame(update);
+    }
+    update();
+}
 </script>
 
 </body>
